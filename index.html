@@ -26,9 +26,35 @@
             //  'mapbox://styles/mapbox/outdoors-v10'  
             //  'mapbox://styles/mapbox/satellite-v10' 
             //  'mapbox://styles/mapbox/traffic-night-v2'
-            center: [-78.6382, 35.7796], // change starting position to coordinates associated w/ your data.
+            center: [-85.7305, 75.7112], // change starting position to coordinates associated w/ your data.
             zoom: 6 // starting zoom
             });
+	    
+	    map.addSource('GB_BattleSites_All', {
+                  type: 'geojson',
+                  data: 'https://raw.githubusercontent.com/vpdawson/mapbox-workshop/master/GB_BattleSites_All_reproj.geojson?token=AMRDHJT5GX6RKFONZSZIT5S5G6RXY'
+              });
+	      
+	      map.addLayer({
+               'id': 'GB_BattleSites_All',
+               "type": "fill",
+               "source": "GB_BattleSites_All",
+               'layout': {},
+               'paint': {
+                   'fill-color': {
+                     property: 'GB_BattleSites_All',
+                     type: 'exponential',
+                     stops: [
+                     [8.312620, '#edf8fb'],
+                     [8.656304, '#b2e2e2'],
+                     [8.7, '#66c2a4'],
+                     [8.9, '#2ca25f'],
+                     [9.119719, '#006d2c']
+                     ],
+                   },
+                   'fill-opacity': 0.2
+               }
+           });
           </script>
       </body>
     </html>
