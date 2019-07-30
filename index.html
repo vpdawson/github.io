@@ -12,49 +12,133 @@
           </style>
       </head>
       <body>
+		  <style>
+            #menu {
+              background: #fff;
+              position: absolute;
+              z-index: 1;
+              top: 10px;
+              right: 10px;
+              border-radius: 3px;
+              width: 120px;
+              border: 1px solid rgba(0,0,0,0.4);
+              font-family: 'Open Sans', sans-serif;
+            }
+            #menu a {
+              font-size: 13px;
+              color: #404040;
+              display: block;
+              margin: 0;
+              padding: 0;
+              padding: 10px;
+              text-decoration: none;
+              border-bottom: 1px solid rgba(0,0,0,0.25);
+              text-align: center;
+            }
+            #menu a:last-child {
+              border: none;
+            }
+            #menu a:hover {
+              background-color: #f8f8f8;
+              color: #404040;
+            }
+            #menu a.active {
+              background-color: #3887be;
+              color: #ffffff;
+            }
+            #menu a.active:hover {
+              background: #3074a4;
+            }
+          </style>
+		  <nav id="menu"></nav>
           <div id='map'></div>
           <script>
             mapboxgl.accessToken = 'pk.eyJ1IjoidnBkYXdzb24iLCJhIjoiY2p5ZjdlOHlpMGl2aDNucXFsaXFpcHN2aSJ9.X0_CQPKNr4zaWIjF-wevoQ'; // don't keep '<' & '>' when pasting token
 
             var map = new mapboxgl.Map({
             container: 'map', // container id
-            style: 'mapbox://styles/mapbox/streets-v10', //hosted style id;  
-            //others: 
+            style: 'mapbox://styles/mapbox/streets-v10', //hosted style id;
+            //others:
             //  'mapbox://styles/mapbox/light-v10'
-            //  'mapbox://styles/mapbox/streets-v10' 
+            //  'mapbox://styles/mapbox/streets-v10'
             //  'mapbox://styles/mapbox/dark-v10'
-            //  'mapbox://styles/mapbox/outdoors-v10'  
-            //  'mapbox://styles/mapbox/satellite-v10' 
+            //  'mapbox://styles/mapbox/outdoors-v10'
+            //  'mapbox://styles/mapbox/satellite-v10'
             //  'mapbox://styles/mapbox/traffic-night-v2'
-            center: [-85.7305, 75.7112], // change starting position to coordinates associated w/ your data.
-            zoom: 6 // starting zoom
+            center: [ -78.648851637059522, 36.043030433742487, 0.0 ], // change starting position to coordinates associated w/ your data.
+            zoom: 12 // starting zoom
             });
-	    
-	    map.addSource('GB_BattleSites_All', {
-                  type: 'geojson',
-                  data: 'https://raw.githubusercontent.com/vpdawson/mapbox-workshop/master/GB_BattleSites_All_reproj.geojson?token=AMRDHJT5GX6RKFONZSZIT5S5G6RXY'
-              });
-	      
-	      map.addLayer({
-               'id': 'GB_BattleSites_All',
-               "type": "fill",
-               "source": "GB_BattleSites_All",
-               'layout': {},
-               'paint': {
-                   'fill-color': {
-                     property: 'GB_BattleSites_All',
-                     type: 'exponential',
-                     stops: [
-                     [8.312620, '#edf8fb'],
-                     [8.656304, '#b2e2e2'],
-                     [8.7, '#66c2a4'],
-                     [8.9, '#2ca25f'],
-                     [9.119719, '#006d2c']
-                     ],
-                   },
-                   'fill-opacity': 0.2
-               }
-           });
-          </script>
+
+			map.on('load', function () {
+            map.addSource('Lakes', {
+              type: 'vector',
+              url: 'mapbox://mapbox.2opop9hr'
+            });
+            map.addLayer({
+              'id': 'Lakes',
+              'type': 'circle',
+              'source': 'Lakes',
+              'layout': {
+              'visibility': 'visible'
+            },
+              'paint': {
+                'circle-radius': 8,
+                'circle-color': 'rgba(55,148,179,1)'
+            },
+            'source-layer': 'Lakes'
+            });
+
+            map.addSource('State', {
+              type: 'vector',
+              url: 'mapbox://mapbox.mapbox-terrain-v2'
+            });
+            map.addLayer({
+              'id': 'State',
+              'type': 'line',
+              'source': 'State',
+              'source-layer': 'nc_state',
+              'layout': {
+                'visibility': 'visible',
+                'line-join': 'round',
+                'line-cap': 'round'
+              },
+              'paint': {
+                'line-color': '#877b59',
+                'line-width': 1
+            }
+            });
+            });
+
+            var toggleableLayerIds = [ 'State', 'Lakes' ];
+
+            for (var i = 0; i < toggleableLayerIds.length; i++) {
+            var id = toggleableLayerIds[i];
+
+            var link = document.createElement('a');
+              link.href = '#';
+              link.className = 'active';
+              link.textContent = id;
+
+            link.onclick = function (e) {
+              var clickedLayer = this.textContent;
+              e.preventDefault();
+              e.stopPropagation();
+
+            var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+            if (visibility === 'visible') {
+              map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+              this.className = '';
+              } else {
+              this.className = 'active';
+              map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+              }
+            };
+
+            var layers = document.getElementById('menu');
+              layers.appendChild(link);
+            }
+
+			</script>
       </body>
     </html>
